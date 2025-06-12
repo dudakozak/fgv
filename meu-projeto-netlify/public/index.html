@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Infográfico: TUST, TUSD e o Futuro da Energia no Brasil</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
+    <!-- 
+    Plano da Narrativa e Estrutura:
+    1.  Título e Hook: Título forte com um dado de impacto.
+    2.  Seção 1: O Que São TUST e TUSD? Explicação simples.
+    3.  Seção 2: O Elo Perdido - Tarifas como Tributação Verde. Diagrama de fluxo para explicar o conceito do Poluidor-Pagador.
+    4.  Seção 3: O Modelo Brasileiro em Foco. Visualizações sobre descontos, subsídios cruzados (ACR vs. ACL) e a Lei 14.300.
+    5.  Seção 4: Lições do Mundo. Cards comparativos para Alemanha, UK e EUA.
+    6.  Seção 5: O Caminho a Seguir. Apresentação das propostas de reforma com funcionalidade de IA em modal, via backend seguro.
+    7.  Footer: Fontes e conclusão.
+
+    Seleção de Visualizações:
+    - Dado de Subsídio Anual: Goal: Inform. Chosen: Single Big Number. Justification: Alto impacto para um dado chave. Method: HTML/CSS. NO SVG.
+    - Desconto para Renováveis: Goal: Compare. Chosen: Donut Chart. Justification: Mostra claramente a proporção do desconto. Library: Chart.js (Canvas). NO SVG.
+    - Subsídio Cruzado (ACR -> ACL): Goal: Compare. Chosen: HTML/CSS Diagram. Justification: Representa o fluxo de forma clara e direta. Method: HTML/CSS. NO SVG.
+    - Produção Eólica por Estado: Goal: Compare/Rank. Chosen: Ordered Bar Chart. Justification: Ideal para comparar e ranquear valores entre categorias. Library: Chart.js (Canvas). NO SVG.
+    - Fluxo da Tributação Verde: Goal: Organize. Chosen: HTML/CSS Flow Chart. Justification: Explica o processo de forma visual e sequencial. Method: HTML/CSS. NO SVG.
+    - Propostas de Reforma: Goal: Organize. Chosen: HTML/CSS Grid with Unicode Icons and Gemini API integration in a modal window. Justification: Organiza as propostas e as torna interativas sem alterar o layout. Method: HTML/CSS/JS. NO SVG.
+    - Comparativo Internacional: Goal: Compare. Chosen: Bar Chart. Justification: Compara a participação de renováveis entre países de forma eficaz. Library: Chart.js (Canvas). NO SVG.
+    
+    Confirmação: NEM Mermaid JS NEM SVG foram utilizados neste documento. Todos os gráficos são renderizados via Canvas (Chart.js) ou construídos com HTML/CSS puro.
+
+    Paleta de Cores Selecionada: Earthy & Energetic Transition
+    -->
+    <style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #f7f9f7;
+            color: #1b263b;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        .card {
+            background-color: #ffffff;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            padding: 1.5rem;
+            transition: all 0.3s ease-in-out;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        .text-primary { color: #2d6a4f; }
+        .text-secondary { color: #40916c; }
+        .text-accent { color: #fca311; }
+        .bg-primary { background-color: #2d6a4f; }
+        .bg-secondary { background-color: #40916c; }
+        .border-primary { border-color: #2d6a4f; }
+        .border-accent { border-color: #fca311; }
+        .gemini-result {
+            margin-top: 1rem;
+            padding: 1rem;
+            background-color: #f8f9fa;
+            border-left: 4px solid #fca311;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #343a40;
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 4px solid #40916c;
+            width: 30px;
+            height: 30px;
+            animation: spin 2s linear infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .modal {
+            transition: opacity 0.25s ease;
+        }
+    </style>
+</head>
+<body class="antialiased">
+    <div class="container mx-auto p-4 md:p-8">
+        
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-6xl font-black text-primary mb-2">TUST e TUSD na Encruzilhada da Transição Energética</h1>
+            <p class="text-lg md:text-xl text-slate-600 max-w-3xl mx-auto">Desafios e Oportunidades para a Tributação Verde e Inovação no Brasil</p>
+        </header>
+
+        <main class="space-y-16">
+
+            <section id="conceitos" class="text-center">
+                <h2 class="text-3xl font-bold text-primary mb-4">O Que São TUST e TUSD?</h2>
+                <p class="max-w-3xl mx-auto text-slate-600 mb-8">
+                    Essas siglas representam as tarifas que remuneram a infraestrutura que leva a eletricidade até você. Pense nelas como o "pedágio" da energia.
+                </p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                    <div class="card text-left">
+                        <h3 class="font-bold text-2xl text-secondary mb-2">TUST 🛣️</h3>
+                        <p class="font-semibold text-primary">Tarifa de Uso do Sistema de Transmissão</p>
+                        <p class="text-slate-600 mt-1">Cobre os custos das grandes linhas de alta tensão que transportam energia das usinas para as subestações das cidades (a "rodovia" da energia).</p>
+                    </div>
+                    <div class="card text-left">
+                        <h3 class="font-bold text-2xl text-secondary mb-2">TUSD 🏙️</h3>
+                        <p class="font-semibold text-primary">Tarifa de Uso do Sistema de Distribuição</p>
+                        <p class="text-slate-600 mt-1">Cobre os custos dos postes e fios que distribuem a energia dentro das cidades até as casas e empresas (as "ruas e avenidas").</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="tributacao-verde" class="md:col-span-2">
+                <div class="card">
+                    <h2 class="text-3xl font-bold text-primary mb-4 text-center">Tarifas como Ferramenta de Tributação Verde</h2>
+                    <p class="text-center text-slate-600 mb-8 max-w-3xl mx-auto">
+                        A forma como a TUST e a TUSD são cobradas pode ir além da simples remuneração da rede. Elas podem ser desenhadas para incentivar comportamentos sustentáveis, aplicando o Princípio do Poluidor-Pagador.
+                    </p>
+                    <div class="flex flex-col md:flex-row justify-center items-center gap-4 md:gap-8">
+                        <div class="p-6 rounded-lg bg-red-50 border border-red-200 text-center w-full md:w-1/3">
+                            <span class="text-4xl">🏭</span>
+                            <h4 class="font-bold text-red-800 mt-2">Fonte Poluente</h4>
+                            <p class="text-red-700 text-sm">Gera externalidades negativas (emissões de GEE).</p>
+                        </div>
+                        <div class="text-5xl text-slate-400 transform rotate-90 md:rotate-0">➡️</div>
+                        <div class="p-6 rounded-lg bg-yellow-50 border border-accent text-center w-full md:w-1/3">
+                            <span class="text-4xl">💰</span>
+                            <h4 class="font-bold text-primary mt-2">Paga TUST/TUSD Majorada</h4>
+                            <p class="text-yellow-800 text-sm">Internaliza o custo ambiental da sua poluição.</p>
+                        </div>
+                    </div>
+                    <div class="flex justify-center my-4">
+                        <div class="text-5xl text-slate-400">⬇️</div>
+                    </div>
+                     <div class="flex flex-col md:flex-row justify-center items-center gap-4 md:gap-8">
+                        <div class="p-6 rounded-lg bg-green-50 border border-green-200 text-center w-full md:w-1/3">
+                            <span class="text-4xl">☀️</span>
+                            <h4 class="font-bold text-green-800 mt-2">Fonte Renovável</h4>
+                            <p class="text-green-700 text-sm">Gera externalidades positivas (energia limpa).</p>
+                        </div>
+                        <div class="text-5xl text-slate-400 transform rotate-90 md:rotate-0">➡️</div>
+                        <div class="p-6 rounded-lg bg-green-100 border border-secondary text-center w-full md:w-1/3">
+                            <span class="text-4xl">📉</span>
+                            <h4 class="font-bold text-primary mt-2">Paga TUST/TUSD Reduzida</h4>
+                            <p class="text-green-900 text-sm">Recebe um benefício por sua contribuição ambiental.</p>
+                        </div>
+                    </div>
+                    <p class="text-center text-slate-500 mt-8 text-sm max-w-2xl mx-auto">Este modelo incentiva a transição para uma matriz energética mais limpa, tornando a poluição mais cara e a energia limpa mais barata.</p>
+                </div>
+            </section>
+            
+            <section id="modelo-brasileiro">
+                <h2 class="text-3xl font-bold text-primary mb-8 text-center">O Modelo Brasileiro em Foco</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="card md:col-span-2">
+                        <h3 class="text-2xl font-bold text-secondary mb-3 text-center">O Problema do Subsídio Cruzado</h3>
+                         <p class="text-center text-slate-600 mb-6 max-w-3xl mx-auto">
+                           Atualmente, os descontos na TUST/TUSD para geradores de fontes renováveis no Mercado Livre (grandes empresas) são, em grande parte, custeados pelos consumidores do Mercado Cativo (residenciais e pequenos comércios), gerando uma distorção.
+                        </p>
+                        <div class="flex flex-col md:flex-row justify-around items-center gap-6">
+                             <div class="text-center">
+                                <p class="text-lg text-slate-700">Consumidores Cativos (ACR)</p>
+                                <div class="text-6xl my-2">🏠</div>
+                                <p class="text-sm text-slate-500">Pagam a conta do subsídio</p>
+                            </div>
+                             <div class="text-center">
+                                <div class="text-5xl text-accent font-black animate-pulse">~R$ 5 Bi</div>
+                                <p class="font-bold text-primary">POR ANO</p>
+                                <div class="text-5xl text-slate-400 my-2 transform rotate-90 md:rotate-0">➡️</div>
+                                <p class="text-sm text-slate-500">em subsídios</p>
+                            </div>
+                             <div class="text-center">
+                                <p class="text-lg text-slate-700">Geradores Renováveis (ACL)</p>
+                                <div class="text-6xl my-2">🏢</div>
+                                <p class="text-sm text-slate-500">Recebem o benefício</p>
+                            </div>
+                        </div>
+                        <p class="text-xs text-slate-400 text-center mt-6">Fonte: Análise baseada em dados de contribuições à ANEEL.</p>
+                    </div>
+
+                    <div class="card">
+                        <h3 class="text-2xl font-bold text-secondary mb-3 text-center">Desconto para Fontes Incentivadas</h3>
+                        <p class="text-center text-slate-600 mb-4">Geradores de fontes como solar e eólica recebem descontos de 50% ou mais na TUST/TUSD, o que barateia seus custos de operação.</p>
+                        <div class="chart-container h-64 md:h-80">
+                            <canvas id="descontoChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <h3 class="text-2xl font-bold text-secondary mb-3 text-center">Produção Eólica no Brasil</h3>
+                         <p class="text-center text-slate-600 mb-4">Apesar de políticas de incentivo, a produção de energia eólica ainda se concentra em poucos estados, indicando que apenas benefícios fiscais podem não ser suficientes.</p>
+                        <div class="chart-container h-64 md:h-80">
+                            <canvas id="eolicaChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="licoes-mundo">
+                <h2 class="text-3xl font-bold text-primary mb-8 text-center">Lições do Mundo</h2>
+                 <p class="text-center text-slate-600 mb-8 max-w-3xl mx-auto">
+                    Outros países oferecem modelos e lições importantes sobre incentivos para energias renováveis. O Brasil pode aprender com seus sucessos e desafios para aprimorar suas próprias políticas.
+                </p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="card md:col-span-2">
+                        <h3 class="text-2xl font-bold text-secondary mb-3 text-center">Participação de Renováveis na Matriz Elétrica (Eólica e Solar)</h3>
+                        <p class="text-center text-slate-600 mb-4">Comparativo da participação de fontes eólica e solar na geração de eletricidade, mostrando diferentes estágios de adoção.</p>
+                        <div class="chart-container h-80">
+                             <canvas id="internationalChart"></canvas>
+                        </div>
+                        <p class="text-xs text-slate-400 text-center mt-4">Fonte: Dados aproximados de diversas fontes internacionais para fins ilustrativos (ex: IEA, Ember).</p>
+                    </div>
+                     <div class="card">
+                        <h3 class="font-bold text-2xl text-secondary mb-2">🇩🇪 Alemanha</h3>
+                        <p class="text-slate-600 mt-1">Pioneira com as <i>Feed-in Tariffs</i> (FiTs), garantiu preços fixos e impulsionou o mercado, mas com alto custo para os consumidores. Hoje, migrou para leilões, buscando mais competitividade.</p>
+                        <p class="mt-3 font-bold text-primary">Lição: Incentivos fortes no início são cruciais, mas precisam evoluir para mecanismos de mercado.</p>
+                    </div>
+                     <div class="card">
+                        <h3 class="font-bold text-2xl text-secondary mb-2">🇬🇧 Reino Unido</h3>
+                        <p class="text-slate-600 mt-1">Utiliza a <i>Smart Export Guarantee</i> (SEG) para remunerar a exportação de energia de pequenos geradores. Enfrenta altos custos para balancear a rede com a intermitência das renováveis.</p>
+                        <p class="mt-3 font-bold text-primary">Lição: É vital considerar e gerenciar os custos de integração e modernização da rede.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="caminho-futuro">
+                <h2 class="text-3xl font-bold text-primary mb-8 text-center">O Caminho a Seguir: Propostas de Reforma</h2>
+                 <p class="text-center text-slate-600 mb-8 max-w-3xl mx-auto">
+                    Para que a TUST e a TUSD se tornem ferramentas eficazes de Tributação Verde, são necessárias reformas que alinhem os sinais econômicos com os objetivos ambientais e de justiça social. Use a IA para explorar os detalhes de cada proposta.
+                </p>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                     <div class="card">
+                        <div>
+                            <h3 class="font-bold text-lg text-secondary mb-2">💸 Adicional por Externalidade</h3>
+                            <p class="text-slate-600" data-desc="Fontes poluentes pagariam um valor extra na tarifa, refletindo o custo ambiental que geram. Alinha-se ao princípio do Poluidor-Pagador.">Fontes poluentes pagariam um valor extra na tarifa, refletindo o custo ambiental que geram. Alinha-se ao princípio do Poluidor-Pagador.</p>
+                        </div>
+                        <div class="mt-4">
+                            <button onclick="generateActionPlan(this)" class="w-full bg-accent text-gray-800 font-bold py-2 px-4 rounded-lg hover:bg-yellow-500 transition-colors">✨ Gerar Plano de Ação</button>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div>
+                            <h3 class="font-bold text-lg text-secondary mb-2">📍 Sinais Locacionais</h3>
+                            <p class="text-slate-600" data-desc="Tarifas diferentes por região, incentivando a instalação de usinas em locais onde a integração à rede é mais barata e eficiente.">Tarifas diferentes por região, incentivando a instalação de usinas em locais onde a integração à rede é mais barata e eficiente.</p>
+                        </div>
+                        <div class="mt-4">
+                            <button onclick="generateActionPlan(this)" class="w-full bg-accent text-gray-800 font-bold py-2 px-4 rounded-lg hover:bg-yellow-500 transition-colors">✨ Gerar Plano de Ação</button>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div>
+                           <h3 class="font-bold text-lg text-secondary mb-2">⏰ Tarifas Variáveis no Tempo</h3>
+                            <p class="text-slate-600" data-desc="Incentivar a injeção de energia na rede nos horários de maior demanda (e maior custo), otimizando o uso do sistema.">Incentivar a injeção de energia na rede nos horários de maior demanda (e maior custo), otimizando o uso do sistema.</p>
+                        </div>
+                         <div class="mt-4">
+                            <button onclick="generateActionPlan(this)" class="w-full bg-accent text-gray-800 font-bold py-2 px-4 rounded-lg hover:bg-yellow-500 transition-colors">✨ Gerar Plano de Ação</button>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div>
+                            <h3 class="font-bold text-lg text-secondary mb-2">⚖️ Justiça Social e Equidade</h3>
+                            <p class="text-slate-600" data-desc="Criar mecanismos para que a transição não onere desproporcionalmente os consumidores de baixa renda, garantindo uma transição justa.">Criar mecanismos para que a transição não onere desproporcionalmente os consumidores de baixa renda, garantindo uma transição justa.</p>
+                        </div>
+                         <div class="mt-4">
+                            <button onclick="generateActionPlan(this)" class="w-full bg-accent text-gray-800 font-bold py-2 px-4 rounded-lg hover:bg-yellow-500 transition-colors">✨ Gerar Plano de Ação</button>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div>
+                            <h3 class="font-bold text-lg text-secondary mb-2">🤝 Estabilidade Regulatória</h3>
+                            <p class="text-slate-600" data-desc="Estabelecer regras claras e de longo prazo para atrair os investimentos massivos necessários para a transição energética.">Estabelecer regras claras e de longo prazo para atrair os investimentos massivos necessários para a transição energética.</p>
+                        </div>
+                         <div class="mt-4">
+                            <button onclick="generateActionPlan(this)" class="w-full bg-accent text-gray-800 font-bold py-2 px-4 rounded-lg hover:bg-yellow-500 transition-colors">✨ Gerar Plano de Ação</button>
+                        </div>
+                    </div>
+                     <div class="card">
+                        <div>
+                            <h3 class="font-bold text-lg text-secondary mb-2">🔌 Fomento a Novas Tecnologias</h3>
+                            <p class="text-slate-600" data-desc="Usar as tarifas para incentivar tecnologias habilitadoras, como sistemas de armazenamento de energia e redes inteligentes (smart grids).">Usar as tarifas para incentivar tecnologias habilitadoras, como sistemas de armazenamento de energia e redes inteligentes (smart grids).</p>
+                        </div>
+                         <div class="mt-4">
+                            <button onclick="generateActionPlan(this)" class="w-full bg-accent text-gray-800 font-bold py-2 px-4 rounded-lg hover:bg-yellow-500 transition-colors">✨ Gerar Plano de Ação</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="text-center mt-16 pt-8 border-t border-slate-200">
+            <p class="text-slate-500">Este infográfico foi gerado com base no relatório de pesquisa "TUST e TUSD na Encruzilhada da Transição Energética: Desafios e Oportunidades para a Tributação Verde e Inovação no Brasil".</p>
+            <p class="text-xs text-slate-400 mt-2">Os dados apresentados são para fins ilustrativos e de análise, sintetizados a partir da pesquisa realizada para a disciplina "Tributação Verde e Inovação Digital" da Escola de Direito do Rio de Janeiro – FGV Direito Rio.</p>
+        </footer>
+
+    </div>
+
+    <!-- Modal Structure -->
+    <div id="actionPlanModal" class="modal fixed inset-0 bg-gray-900 bg-opacity-60 hidden items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-lg shadow-xl p-6 max-w-2xl w-full relative">
+            <button onclick="closeModal()" class="absolute top-2 right-4 text-3xl font-light text-gray-600 hover:text-gray-900">&times;</button>
+            <h3 id="modalTitle" class="text-2xl font-bold text-primary mb-4"></h3>
+            <div id="modalContent"></div>
+        </div>
+    </div>
+
+
+    <script>
+        const tooltipTitleCallback = (tooltipItems) => {
+            const item = tooltipItems[0];
+            let label = item.chart.data.labels[item.dataIndex];
+            if (Array.isArray(label)) {
+              return label.join(' ');
+            } else {
+              return label;
+            }
+        };
+
+        const wrapLabel = (label) => {
+            const maxLength = 16;
+            if (label.length <= maxLength) {
+                return label;
+            }
+            const words = label.split(' ');
+            const lines = [];
+            let currentLine = '';
+            words.forEach(word => {
+                if ((currentLine + ' ' + word).length > maxLength) {
+                    lines.push(currentLine);
+                    currentLine = word;
+                } else {
+                    currentLine = currentLine ? currentLine + ' ' + word : word;
+                }
+            });
+            lines.push(currentLine);
+            return lines;
+        };
+        
+        const modal = document.getElementById('actionPlanModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalContent = document.getElementById('modalContent');
+
+        function closeModal() {
+            modal.classList.add('hidden');
+        }
+
+        async function generateActionPlan(button) {
+            const card = button.closest('.card');
+            const proposalTitle = card.querySelector('h3').innerText;
+            const proposalDesc = card.querySelector('p[data-desc]').dataset.desc;
+            
+            modalTitle.innerText = proposalTitle;
+            modalContent.innerHTML = '<div class="loader"></div>';
+            modal.classList.remove('hidden');
+            
+            button.disabled = true;
+
+            const prompt = `Como um especialista em políticas energéticas e regulatórias no Brasil, elabore um plano de ação conciso e estruturado para a seguinte proposta:\n\nTítulo: "${proposalTitle}"\nDescrição: "${proposalDesc}"\n\nO plano deve conter:\n1.  **Primeiros Passos (3 a 4 pontos):** Ações imediatas e viáveis.\n2.  **Stakeholders-Chave:** Quem precisa ser envolvido (governo, agências, setor privado, sociedade civil).\n3.  **Principais Desafios:** Obstáculos técnicos, políticos ou econômicos a serem superados.\n\nFormate a resposta em HTML simples, usando tags <ul>, <li> e <strong> para uma boa apresentação.`;
+            
+            // ATUALIZAÇÃO: A URL da API agora aponta para o seu backend local
+            const apiUrl = '/api/generate';
+
+            try {
+                const payload = { prompt };
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                if (!response.ok) {
+                   const errorData = await response.json();
+                   throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+                }
+                
+                // A resposta da sua função vem como uma string no `body`, então precisamos de fazer o parse.
+                const result = JSON.parse(await response.text());
+
+                if (result.candidates && result.candidates.length > 0 &&
+                    result.candidates[0].content && result.candidates[0].content.parts &&
+                    result.candidates[0].content.parts.length > 0) {
+                    let text = result.candidates[0].content.parts[0].text;
+                    text = text.replace(/^```html\s*/, '').replace(/\s*```$/, '');
+                    modalContent.innerHTML = `<div class="gemini-result">${text}</div>`;
+                } else {
+                    modalContent.innerHTML = `<div class="gemini-result">Não foi possível gerar um plano de ação. Tente novamente.</div>`;
+                }
+
+            } catch (error) {
+                console.error('Erro ao chamar o backend:', error);
+                modalContent.innerHTML = `<div class="gemini-result">Ocorreu um erro ao conectar-se ao servidor backend. Verifique se ele está rodando e o console para mais detalhes.</div>`;
+            } finally {
+                button.disabled = false;
+            }
+        }
+
+
+        const primaryColor = '#2d6a4f';
+        const secondaryColor = '#40916c';
+        const accentColor = '#b7e4c7';
+
+        
+        const descontoCtx = document.getElementById('descontoChart');
+        if (descontoCtx) {
+            new Chart(descontoCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Custo da Tarifa Coberto', 'Desconto Aplicado'],
+                    datasets: [{
+                        label: 'Desconto TUST/TUSD',
+                        data: [50, 50],
+                        backgroundColor: [primaryColor, accentColor],
+                        borderColor: '#ffffff',
+                        borderWidth: 4,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                        },
+                        title: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                title: tooltipTitleCallback
+                            }
+                        }
+                    },
+                    cutout: '60%'
+                }
+            });
+        }
+        
+        const eolicaCtx = document.getElementById('eolicaChart');
+        if (eolicaCtx) {
+            const eolicaLabels = ['Rio Grande do Norte', 'Ceará', 'Bahia', 'Rio Grande do Sul', 'Santa Catarina', 'Paraíba', 'Sergipe', 'Rio de Janeiro'];
+            const wrappedEolicaLabels = eolicaLabels.map(wrapLabel);
+            new Chart(eolicaCtx, {
+                type: 'bar',
+                data: {
+                    labels: wrappedEolicaLabels,
+                    datasets: [{
+                        label: 'Capacidade Instalada (MW)',
+                        data: [1339.2, 661.0, 587.6, 460, 236.4, 69, 34.5, 28.1],
+                        backgroundColor: secondaryColor,
+                        borderColor: primaryColor,
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                title: tooltipTitleCallback
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+        
+        const internationalCtx = document.getElementById('internationalChart');
+        if (internationalCtx) {
+            new Chart(internationalCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Alemanha', 'Reino Unido', 'Espanha', 'Média UE', 'Brasil', 'EUA'],
+                    datasets: [{
+                        label: '% de Eólica e Solar na Geração Elétrica (2023, aprox.)',
+                        data: [44, 33, 33, 27, 16, 16],
+                        backgroundColor: ['#2d6a4f', '#40916c', '#52b788', '#95d5b2', '#fca311', '#0077b6'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false,
+                        },
+                        title: {
+                            display: false,
+                        },
+                        tooltip: {
+                            callbacks: {
+                                title: tooltipTitleCallback
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                           ticks: {
+                               callback: function(value) {
+                                   return value + '%';
+                               }
+                           }
+                        }
+                    }
+                }
+            });
+        }
+
+    </script>
+</body>
+</html>
+```
+
+### Como Utilizar esta Nova Estrutura
+
+Para colocar o infográfico online de forma segura com esta nova arquitetura, você precisará seguir estes passos:
+
+1.  **Configurar o Ambiente Backend:**
+    * Você precisará de um ambiente que rode Node.js (por exemplo, um servidor próprio, ou serviços de hospedagem como Heroku, Vercel, Render, etc.).
+    * Crie uma pasta para o seu projeto backend.
+    * Salve o código do "Backend (Node.js) para API Segura" em um arquivo chamado `server.js` (ou outro nome de sua preferência).
+    * No terminal, dentro dessa pasta, rode `npm init -y` para criar um arquivo `package.json`.
+    * Instale as dependências necessárias: `npm install express node-fetch@2 cors dotenv`.
+
+2.  **Proteger sua Chave de API:**
+    * Na mesma pasta do backend, crie um arquivo chamado `.env`.
+    * Dentro deste arquivo, adicione sua chave de API da seguinte forma:
+        ```
+        GEMINI_API_KEY=SUA_CHAVE_DE_API_SECRETA_VAI_AQUI
+        ```
+    * **Importante:** Se você usar um sistema de controle de versão como o Git, adicione o arquivo `.env` ao seu `.gitignore` para nunca enviá-lo para repositórios públicos.
+
+3.  **Hospedar o Backend e o Frontend:**
+    * **Backend:** Faça o deploy da sua pasta de backend para o serviço de hospedagem escolhido. Configure a variável de ambiente `GEMINI_API_KEY` nas configurações do seu serviço de hospedagem.
+    * **Frontend:** Você pode hospedar o arquivo HTML do infográfico em qualquer serviço de hospedagem de sites estáticos.
+    * **Ajuste Final:** No arquivo HTML, você precisará alterar a linha `const apiUrl = 'http://localhost:3000/api/generate';` para a URL pública do seu backend hospedado (ex: `https://seu-backend.onrender.com/api/generate`).
+
+Seguindo esses passos, seu infográfico funcionará de forma segura, com a chave de API protegida no servidor, invisível para os usuários fina
